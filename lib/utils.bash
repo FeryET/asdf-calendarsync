@@ -5,7 +5,8 @@ set -euo pipefail
 # TODO: Ensure this is the correct GitHub homepage where releases can be downloaded for calendarsync.
 GH_REPO="https://github.com/inovex/CalendarSync"
 TOOL_NAME="calendarsync"
-TOOL_TEST="calendarsync --help"
+TOOL_CAMELCASE_NAME="CalendarSync"
+TOOL_TEST="CalendarSync --help"
 
 fail() {
 	echo -e "asdf-$TOOL_NAME: $*"
@@ -42,8 +43,7 @@ download_release() {
 	filename="$2"
 
 	# TODO: Adapt the release URL convention for calendarsync
-	url="$GH_REPO/archive/v${version}.tar.gz"
-
+	url="$GH_REPO/releases/download/v${version}/${TOOL_CAMELCASE_NAME}_${version}_$(uname -s | tr '[:upper:]' '[:lower:]')_$(dpkg --print-architecture).tar.gz"
 	echo "* Downloading $TOOL_NAME release $version..."
 	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
 }
@@ -61,6 +61,7 @@ install_version() {
 		mkdir -p "$install_path"
 		cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
 
+		ls -lh "$install_path"
 		# TODO: Assert calendarsync executable exists.
 		local tool_cmd
 		tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
