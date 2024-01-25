@@ -34,12 +34,24 @@ list_all_versions() {
 	list_github_tags
 }
 
+get_arch() {
+	ARCH="$(uname -m)"
+	if [ "$ARCH" = "x86_64" ]; then
+		ARCH="amd64"
+	fi
+	echo "$ARCH"
+}
+
+get_os() {
+	uname -s | tr '[:upper:]' '[:lower:]'
+}
+
 download_release() {
 	local version filename url
 	version="$1"
 	filename="$2"
 
-	url="$GH_REPO/releases/download/v${version}/${TOOL_CAMELCASE_NAME}_${version}_$(uname -s | tr '[:upper:]' '[:lower:]')_$(dpkg --print-architecture).tar.gz"
+	url="$GH_REPO/releases/download/v${version}/${TOOL_CAMELCASE_NAME}_${version}_$(get_os)_$(get_arch).tar.gz"
 	echo "* Downloading $TOOL_NAME release $version..."
 	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
 }
